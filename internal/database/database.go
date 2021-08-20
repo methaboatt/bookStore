@@ -1,23 +1,29 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
-type Config struct {
-	User     string
-	Password string
-	Host     string
-	Port     int
-	Name     string
-}
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "boat"
+	dbname   = "bookStore"
+)
 
-func Open(cfg Config) (*sqlx.DB, error) {
-	sslmode := "require"
+// SetupDB : initializing mysql database
+func SetupDB() *sql.DB {
 
-	var dataSoruce = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Name, sslmode)
-	return sqlx.Connect("postgres", dataSoruce)
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err.Error())
+	}
+	return db
 }

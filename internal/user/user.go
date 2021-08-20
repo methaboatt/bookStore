@@ -1,4 +1,4 @@
-package server
+package user
 
 import (
 	"database/sql"
@@ -8,57 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "boat"
-	dbname   = "bookStore"
-)
-
-// SetupDB : initializing mysql database
-func SetupDB() *sql.DB {
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err.Error())
-	}
-	return db
-}
-
-func exampleFunc(c *gin.Context) {
-	var result Result
-	result.ID = c.Query("id")
-	result.Name = c.PostForm("name")
-	result.Message = c.PostForm("message")
-
-	c.JSON(200, gin.H{
-		"message": result,
-	})
-}
-
-func exampleJSON(c *gin.Context) {
-	var input Result
-	e := c.BindJSON(&input)
-	if e != nil {
-		fmt.Println(e)
-	}
-	c.JSON(200, gin.H{
-		"id":      input.ID,
-		"name":    input.Name,
-		"message": input.Message,
-	})
-}
-
-type Result struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Message string `json:"message"`
-}
 
 type Customer struct {
 	ID        string `json:"id"`
@@ -112,7 +61,10 @@ func HandleGetUser(c *gin.Context) {
 	var customer Customer
 	var customerlst []Customer
 	db := c.MustGet("db").(*sql.DB)
-	sqlStatement := `SELECT * from users`
+	customer.ID = c.Param("id")
+	customer.Age = c.Query("age")
+	fmt.Println("ID = "+customer.ID, "AGE = "+customer.Age)
+	sqlStatement := `SELECT * from users WHERE id = ` + customer.ID + ` AND age = ` + customer.Age
 
 	row, err := db.Query(sqlStatement)
 	if err != nil {
@@ -162,15 +114,4 @@ func updateUser(customer Customer, c *gin.Context) string {
 	}
 
 	return "update successful row ID is :" + strconv.Itoa(id)
-}
-func HandlePatchUser(c *gin.Context) {
-	customer := Customer{}
-	customer.ID = c.PostForm("id")
-	customer.FirstName = c.PostForm("firstName")
-
-	c.JSON(200, gin.H{
-		"message":  customer,
-		"message1": updateUser(customer, c),
-	})
-
 }

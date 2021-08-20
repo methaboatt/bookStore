@@ -1,23 +1,29 @@
 package main
 
 import (
-	"github.com/bookStore/internal/server"
+	"github.com/bookStore/internal/database"
+	"github.com/bookStore/internal/product"
+	"github.com/bookStore/internal/user"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	db := server.SetupDB()
+	db := database.SetupDB()
 	r := gin.Default()
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 	})
 	defer db.Close()
 
-	r.POST("/testAddUser", server.HandleInsertUser)
-	r.GET("/testGetUser", server.HandleGetUser)
-	r.PUT("/testUpdateUser", server.HandleUpdateUser)
-	r.PATCH("/testPatchUser", server.HandlePatchUser)
+	r.POST("/testAddUser", user.HandleInsertUser)
+	r.GET("/testGetUser/:id", user.HandleGetUser)
+	r.PUT("/testUpdateUser", user.HandleUpdateUser)
+
+	r.GET("/getAllBook", product.HandleGetAllbook)
+	r.GET("/getBook/:id", product.HandleGetbook)
+	r.POST("/AddBook", product.HandleInsertBook)
+	r.POST("/UpdateBook", product.HandleUpdateBook)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
