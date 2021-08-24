@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/bookStore/internal/database"
 	"github.com/bookStore/internal/order"
 	"github.com/bookStore/internal/product"
@@ -17,6 +19,8 @@ func main() {
 		c.Set("gorm", gormdb)
 	})
 	defer db.Close()
+
+	fmt.Println("t")
 
 	r.POST("/testAddUser", user.HandleInsertUser)
 	r.GET("/testGetUser/:id", user.HandleGetUser)
