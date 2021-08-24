@@ -2,17 +2,19 @@ package main
 
 import (
 	"github.com/bookStore/internal/database"
+	"github.com/bookStore/internal/order"
 	"github.com/bookStore/internal/product"
 	"github.com/bookStore/internal/user"
 	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq"
 )
 
 func main() {
 	db := database.SetupDB()
+	gormdb := database.SetupGormDB()
 	r := gin.Default()
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
+		c.Set("gorm", gormdb)
 	})
 	defer db.Close()
 
@@ -24,6 +26,9 @@ func main() {
 	r.GET("/getBook/:id", product.HandleGetbook)
 	r.POST("/AddBook", product.HandleInsertBook)
 	r.POST("/UpdateBook", product.HandleUpdateBook)
+
+	r.GET("/getOrder", order.HandleGetAllorder)
+	r.POST("/AddOrder", order.HandleInsertorder)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

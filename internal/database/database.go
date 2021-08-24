@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
@@ -24,6 +26,16 @@ func SetupDB() *sql.DB {
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err.Error())
+	}
+	return db
+}
+
+func SetupGormDB() *gorm.DB {
+	dsn := "host=localhost user=postgres password=boat dbname=bookStore port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		panic("failed to connect database")
 	}
 	return db
 }
